@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>التغذية الذكية - عرض تقديمي تفاعلي</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #2e7d32;
+            --secondary-color: #81c784;
+            --light-green: #e8f5e9;
+            --dark-green: #1b5e20;
+            --accent-color: #ff8f00;
+            --text-color: #333;
+            --white: #fff;
+            --shadow: 0 4px 8px rgba(0,0,0,0.1);
+            --transition: all 0.3s ease;
+        }
+        
+        body {
+            font-family: 'Tajawal', 'Arial', sans-serif;
+            background-color: #f5f7fa;
+            margin: 0;
+            padding: 0;
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), var(--dark-green));
+            color: var(--white);
+            padding: 1rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .logo-text h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            line-height: 1.2;
+        }
+        
+        .logo-text span {
+            font-size: 0.8rem;
+            opacity: 0.9;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 90px auto 20px;
+            padding: 0 20px;
+        }
+        
+        .presentation-container {
+            background-color: var(--white);
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+        
+        .slide {
+            padding: 2rem;
+            min-height: 500px;
+            position: relative;
+            background: linear-gradient(135deg, #f5f7fa 0%, var(--light-green) 100%);
+            border-bottom: 2px solid var(--secondary-color);
+        }
+        
+        .slide-title {
+            color: var(--primary-color);
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 0.5rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        .slide-content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .chart-container {
+            flex: 1;
+            min-width: 300px;
+            height: 300px;
+            background-color: var(--white);
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: var(--shadow);
+            position: relative;
+            transition: var(--transition);
+        }
+        
+        .chart-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        
+        .nutrition-fact {
+            background-color: var(--light-green);
+            border-left: 5px solid var(--primary-color);
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 5px 5px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        .nutrition-fact i {
+            position: absolute;
+            right: 15px;
+            top: 15px;
+            color: var(--primary-color);
+            font-size: 1.5rem;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            padding: 0 20px 20px;
+        }
+        
+        .nav-button {
+            background-color: var(--primary-color);
+            color: var(--white);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: var(--transition);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .nav-button:hover {
+            background-color: var(--dark-green);
+            transform: translateY(-2px);
+        }
+        
+        .nav-button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .slide-indicator {
+            text-align: center;
+            padding: 10px;
+            background-color: var(--light-green);
+            color: var(--primary-color);
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .interactive-btn {
+            background-color: var(--accent-color);
+            color: var(--white);
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            margin: 5px;
+            transition: var(--transition);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .interactive-btn:hover {
+            background-color: #ff6f00;
+            transform: scale(1.05);
+        }
+        
+        .highlight {
+            background-color: #c8e6c9;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+        
+        .campaign-card {
+            background-color: var(--white);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            transition: var(--transition);
+            border-top: 4px solid var(--secondary-color);
+            flex: 1 1 300px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .campaign-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .campaign-title {
+            color: var(--primary-color);
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .review-card {
+            background-color: var(--white);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            position: relative;
+            flex: 1 1 300px;
+        }
+        
+        .positive-review {
+            border-right: 4px solid #4caf50;
+        }
+        
+        .negative-review {
+            border-right: 4px solid #f44336;
+        }
+        
+        .review-text {
+            font-style: italic;
+            margin-bottom: 10px;
+            position: relative;
+            padding-right: 20px;
+        }
+        
+        .review-text i {
+            position: absolute;
+            right: 0;
+            top: 0;
+            opacity: 0.2;
+            font-size: 3rem;
+        }
+        
+        .review-author {
+            text-align: left;
+            font-weight: bold;
+            color: #555;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .slide-description {
+            background-color: rgba(255,255,255,0.9);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-left: 4px solid var(--primary-color);
+            position: relative;
+        }
+        
+        .slide-description i {
+            position: absolute;
+            left: 15px;
+            top: 15px;
+            color: var(--primary-color);
+        }
+        
+        .footer {
+            background: linear-gradient(135deg, var(--primary-color), var(--dark-green));
+            color: var(--white);
+            text-align: center;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            border-radius: 0 0 10px 10px;
+        }
+        
+        .footer p {
+            margin: 0.5rem 0;
+        }
+        
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .social-icons a {
+            color: var(--white);
+            font-size: 1.2rem;
+            transition: var(--transition);
+        }
+        
+        .social-icons a:hover {
+            transform: translateY(-3px);
+            color: var(--secondary-color);
+        }
+        
+        .campaign-badge {
+            position: absolute;
+            top: 0;
+            left: 0;
+            background-color: var(--accent-color);
+            color: white;
+            padding: 3px 10px;
+            font-size: 0.7rem;
+            border-radius: 0 0 5px 0;
+        }
+        
+        /* تأثير النقر على الأيقونات */
+        .clickable-icon {
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .clickable-icon:active {
+            color: var(--primary-color);
+            transform: scale(1.2);
+        }
+        
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                padding: 0.5rem;
+            }
+            
+            .logo {
+                margin-bottom: 5px;
+            }
+            
+            .logo-text h1 {
+                font-size: 1.2rem;
+            }
+            
+            .container {
+                margin-top: 110px;
+            }
+            
+            .slide {
+                padding: 1rem;
+                min-height: 400px;
+            }
+            
+            .slide-title {
+                font-size: 1.5rem;
+            }
+            
+            .chart-container {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">
+            <div class="logo-text">
+                <h1>التغذية الذكية</h1>
+                <span>صحة أفضل.. حياة أطول</span>
+            </div>
+        </div>
+        <div>
+            <span id="current-date"></span>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="presentation-container">
+            <!-- الشريحة 1: الصفحة الرئيسية -->
+            <div class="slide" id="slide1">
+                <h1 class="slide-title"><i class="fas fa-chart-line clickable-icon"></i> التغذية الذكية: تحليل أداء الحملات</h1>
+                <div class="slide-content">
+                    <div style="text-align: center; width: 100%;">
+                        <h2 style="color: var(--primary-color);">تحليل بيانات أداء الحملات الإعلانية</h2>
+                        <p style="font-size: 1.1rem;">عرض تقديمي تفاعلي يسلط الضوء على أداء حملاتنا التسويقية خلال الربع الأول من 2023</p>
+                        <div class="nutrition-fact">
+                            <i class="fas fa-chart-pie clickable-icon"></i>
+                            <p>تم تحليل بيانات <span class="highlight">12 حملة إعلانية</span> عبر <span class="highlight">3 قنوات تسويقية</span> خلال الفترة من يناير إلى مارس 2023</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="slide-description">
+                    <i class="fas fa-info-circle clickable-icon"></i>
+                    <p>هذا العرض التقديمي يقدم تحليلًا شاملًا لأداء الحملات التسويقية لشركة "التغذية الذكية" خلال الربع الأول من العام، مع التركيز على النتائج الرئيسية والتوصيات الاستراتيجية.</p>
+                </div>
+            </div>
+            
+            <!-- الشريحة 2: قائمة الحملات -->
+            <div class="slide" id="slide2">
+                <h1 class="slide-title"><i class="fas fa-bullhorn clickable-icon"></i> حملات التغذية الذكية التسويقية</h1>
+                <div class="slide-content">
+                    <div style="display: flex; flex-wrap: wrap; justify-content: center; width: 100%;">
+                        <div class="campaign-card">
+                            <div class="campaign-badge">الأعلى أداءً</div>
+                            <div class="campaign-title"><i class="fas fa-utensils clickable-icon"></i> التغذية الصحية في رمضان</div>
+                            <p><i class="fas fa-calendar-alt clickable-icon"></i> يناير 2023</p>
+                            <p><i class="fas fa-hashtag clickable-icon"></i> وسائل التواصل الاجتماعي</p>
+                            <p><i class="fas fa-chart-bar clickable-icon"></i> معدل تحويل: <span class="highlight">5.7%</span></p>
+                        </div>
+                        
+                        <div class="campaign-card">
+                            <div class="campaign-badge">الأعلى أداءً</div>
+                            <div class="campaign-title"><i class="fas fa-gift clickable-icon"></i> عروض السنة الجديدة</div>
+                            <p><i class="fas fa-calendar-alt clickable-icon"></i> ديسمبر - يناير</p>
+                            <p><i class="fas fa-hashtag clickable-icon"></i> البريد الإلكتروني</p>
+                            <p><i class="fas fa-chart-bar clickable-icon"></i> معدل تحويل: <span class="highlight">4.9%</span></p>
+                        </div>
+                        
+                        <div class="campaign-card">
+                            <div class="campaign-badge">الأعلى أداءً</div>
+                            <div class="campaign-title"><i class="fas fa-leaf clickable-icon"></i> وصفات البروتين النباتي</div>
+                            <p><i class="fas fa-calendar-alt clickable-icon"></i> فبراير 2023</p>
+                            <p><i class="fas fa-hashtag clickable-icon"></i> وسائل التواصل</p>
+                            <p><i class="fas fa-chart-bar clickable-icon"></i> معدل تحويل: <span class="highlight">4.5%</span></p>
+                        </div>
+                        
+                        <div class="campaign-card">
+                            <div class="campaign-title"><i class="fas fa-globe-africa clickable-icon"></i> حملة اليوم العالمي للتغذية</div>
+                            <p><i class="fas fa-calendar-alt clickable-icon"></i> فبراير - مارس</p>
+                            <p><i class="fas fa-hashtag clickable-icon"></i> وسائل التواصل</p>
+                            <p><i class="fas fa-chart-bar clickable-icon"></i> معدل تحويل: <span class="highlight">4.2%</span></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="slide-description">
+                    <i class="fas fa-info-circle clickable-icon"></i>
+                    <p>تنوعت حملاتنا التسويقية بين التوعية الصحية والعروض الترويجية، مع التركيز على المناسبات الموسمية التي تهم جمهورنا المستهدف من المهتمين بالتغذية الصحية.</p>
+                </div>
+            </div>
+            
+            <!-- الشريحة 3: آراء العملاء -->
+            <div class="slide" id="slide3">
+                <h1 class="slide-title"><i class="fas fa-comments clickable-icon"></i> آراء العملاء في حملات التغذية الذكية</h1>
+                <div class="slide-content">
+                    <div style="display: flex; flex-wrap: wrap; justify-content: center; width: 100%;">
+                        <div class="review-card positive-review">
+                            <div class="review-text">
+                                <i class="fas fa-quote-right clickable-icon"></i>
+                                حملة رمضان غيرت طريقة تغذيتي بالكامل، الوصفات كانت سهلة ومفيدة جدًا لصحتنا خلال الشهر الكريم.
+                            </div>
+                            <div class="review-author">
+                                <i class="fas fa-user clickable-icon"></i> أمينة السالم
+                                <span style="color: #4caf50;"><i class="fas fa-star clickable-icon"></i><i class="fas fa-star clickable-icon"></i><i class="fas fa-star clickable-icon"></i><i class="fas fa-star clickable-icon"></i><i class="fas fa-star clickable-icon"></i></span>
+                            </div>
+                        </div>
+                        
+                        <div class="review-card positive-review">
+                            <div class="review-text">
+                                <i class="fas fa-quote-right clickable-icon"></i>
+                                برنامج التغذية النباتية ساعدني في التحول لنظام صحي متكامل دون معاناة، المعلومات كانت دقيقة ومفيدة.
+                            </div>
+                            <div class="review-author">
+                                <i class="fas fa-user clickable-icon"></i> خالد الرشيد
+                                <span style="color: #4caf50;"><i class="fas fa-star clickable-icon"></i><i class="fas fa-star clickable-icon"></i><i class="fas fa-star clickable-icon"></i><i class="fas fa-star clickable-icon"></i><i class="fas fa-star-half-alt clickable-icon"></i></span>
+                            </div>
+                        </div>
+                        
+                        <div class="review-card negative-review">
+                            <div class="review-text">
+                                <i class="fas fa-quote-right clickable-icon"></i>
+                                بعض العروض كانت محدودة الوقت بشكل مبالغ فيه، ولم أستطع الاستفادة منها رغم اهتمامي بالموضوع.
+                            </div>
+                            <div class="review-author">
+                                <i class="fas fa-user clickable-icon"></i> سارة النجدي
+                                <span style="color: #f44336;"><i class="fas fa-star clickable-icon"></i><i class="fas fa-star clickable-icon"></i><i class="fas fa-star clickable-icon"></i></span>
+                            </div>
+                        </div>
+                        
+                        <div class="review-card positive-review">
+                            <div class="review-text">
+                                <i class="fas fa-quote-right clickable-icon"></i>
+                                استشارات التغذية المصاحبة للحملات كانت احترافية وساعدتني في حل مشاكل صحية عانيت منها سنوات.
+                            </div>
+                            <div class="review-author">
+                                <i class="fas fa-user clickable-icon"></i> محمد الحربي
+                                <span style="color: #4caf50;"><i class="fas fa-star clickable-icon"></i><i class="fas fa-star clickable-icon"></i><i class="fas fa-star clickable-icon"></i><i class="fas fa-star clickable-icon"></i><i class="fas fa-star clickable-icon"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="slide-description">
+                    <i class="fas fa-info-circle clickable-icon"></i>
+                    <p>تلقت حملاتنا تفاعلاً إيجابياً من العملاء، خاصة فيما يتعلق بالجوانب التوعوية والعملية، مع بعض الملاحظات حول تحسين الجوانب اللوجستية للعروض الترويجية.</p>
+                </div>
+            </div>
+            
+            <!-- الشريحة 4: نظرة عامة على الأداء -->
+            <div class="slide" id="slide4">
+                <h1 class="slide-title"><i class="fas fa-chart-bar clickable-icon"></i> نظرة عامة على الأداء</h1>
+                <div class="slide-content">
+                    <div class="chart-container">
+                        <canvas id="clicksSalesChart"></canvas>
+                    </div>
+                    <div style="flex: 1; min-width: 300px;">
+                        <h3 style="color: var(--primary-color);"><i class="fas fa-list-ol clickable-icon"></i> ملخص الأداء</h3>
+                        <ul style="line-height: 1.8;">
+                            <li><i class="fas fa-mouse-pointer clickable-icon"></i> إجمالي النقرات: <span class="highlight">45,320</span></li>
+                            <li><i class="fas fa-exchange-alt clickable-icon"></i> معدل التحويل: <span class="highlight">3.2%</span></li>
+                            <li><i class="fas fa-shopping-cart clickable-icon"></i> إجمالي المبيعات: <span class="highlight">1,450</span> طلب</li>
+                            <li><i class="fas fa-money-bill-wave clickable-icon"></i> متوسط قيمة الطلب: <span class="highlight">120 ريال</span></li>
+                        </ul>
+                        <div class="nutrition-fact">
+                            <i class="fas fa-trophy clickable-icon"></i>
+                            <p>أفضل شهر من حيث المبيعات كان <span class="highlight">فبراير</span> بنسبة زيادة <span class="highlight">18%</span> عن المتوسط</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="slide-description">
+                    <i class="fas fa-info-circle clickable-icon"></i>
+                    <p>حققت الحملات التسويقية نتائج ممتازة في الربع الأول، مع تفوق ملحوظ في شهر فبراير بسبب الحملات الموسمية المرتبطة باليوم العالمي للتغذية وعروض منتصف الشتاء.</p>
+                </div>
+            </div>
+            
+            <!-- الشريحة 5: مقارنة بين القنوات التسويقية -->
+            <div class="slide" id="slide5">
+                <h1 class="slide-title"><i class="fas fa-chart-pie clickable-icon"></i> مقارنة بين القنوات التسويقية</h1>
+                <div class="slide-content">
+                    <div class="chart-container" style="flex: 2;">
+                        <canvas id="channelsChart"></canvas>
+                    </div>
+                    <div style="flex: 1; min-width: 300px;">
+                        <h3 style="color: var(--primary-color);"><i class="fas fa-filter clickable-icon"></i> أداء القنوات</h3>
+                        <table class="data-table">
+                            <tr>
+                                <th>القناة</th>
+                                <th>النقرات</th>
+                                <th>التحويل</th>
+                            </tr>
+                            <tr>
+                                <td><i class="fab fa-facebook clickable-icon"></i> وسائل التواصل</td>
+                                <td>18,450</td>
+                                <td>4.1%</td>
+                            </tr>
+                            <tr>
+                                <td><i class="fas fa-envelope clickable-icon"></i> البريد الإلكتروني</td>
+                                <td>12,780</td>
+                                <td>2.8%</td>
+                            </tr>
+                            <tr>
+                                <td><i class="fab fa-google clickable-icon"></i> محركات البحث</td>
+                                <td>14,090</td>
+                                <td>2.5%</td>
+                            </tr>
+                        </table>
+                        <button class="interactive-btn" onclick="showAnalysis()">
+                            <i class="fas fa-chart-line clickable-icon"></i> تحليل الأداء
+                        </button>
+                    </div>
+                </div>
+                <div class="slide-description">
+                    <i class="fas fa-info-circle clickable-icon"></i>
+                    <p>أظهرت وسائل التواصل الاجتماعي تفوقاً واضحاً في أداء الحملات، بينما تحتاج قنوات البريد الإلكتروني ومحركات البحث إلى إعادة تقييم لتحسين معدلات التحويل.</p>
+                </div>
+            </div>
+            
+            <!-- الشريحة 6: تحليل الحملات الناجحة -->
+            <div class="slide" id="slide6">
+                <h1 class="slide-title"><i class="fas fa-medal clickable-icon"></i> تحليل الحملات الناجحة</h1>
+                <div class="slide-content">
+                    <div style="flex: 1; min-width: 300px;">
+                        <h3 style="color: var(--primary-color);"><i class="fas fa-trophy clickable-icon"></i> أفضل 3 حملات</h3>
+                        <ol style="line-height: 2;">
+                            <li><strong><i class="fas fa-medal clickable-icon" style="color: gold;"></i> حملة "التغذية الصحية في رمضان"</strong>
+                                <br>معدل تحويل: <span class="highlight">5.7%</span></li>
+                            <li><strong><i class="fas fa-medal clickable-icon" style="color: silver;"></i> حملة "عروض السنة الجديدة"</strong>
+                                <br>معدل تحويل: <span class="highlight">4.9%</span></li>
+                            <li><strong><i class="fas fa-medal clickable-icon" style="color: #cd7f32;"></i> حملة "وصفات البروتين النباتي"</strong>
+                                <br>معدل تحويل: <span class="highlight">4.5%</span></li>
+                        </ol>
+                        <div class="nutrition-fact">
+                            <i class="fas fa-lightbulb clickable-icon"></i>
+                            <p>الحملات المرتبطة بمناسبات محددة حققت نتائج أفضل بنسبة <span class="highlight">35%</span> من الحملات العامة</p>
+                        </div>
+                    </div>
+                    <div class="chart-container" style="flex: 1;">
+                        <canvas id="campaignsChart"></canvas>
+                    </div>
+                </div>
+                <div style="margin-top: 20px; text-align: center;">
+                    <button class="interactive-btn" onclick="showElement('success-factors')">
+                        <i class="fas fa-check-circle clickable-icon"></i> عوامل النجاح
+                    </button>
+                    <button class="interactive-btn" onclick="showElement('recommendations')">
+                        <i class="fas fa-clipboard-list clickable-icon"></i> توصيات
+                    </button>
+                    
+                    <div id="success-factors" style="display: none; margin-top: 15px; padding: 15px; background-color: var(--light-green); border-radius: 5px;">
+                        <h4 style="color: var(--primary-color); margin-top: 0;"><i class="fas fa-check-circle clickable-icon"></i> عوامل نجاح الحملات:</h4>
+                        <ul>
+                            <li><i class="fas fa-calendar-check clickable-icon"></i> توقيت الحملة مع المناسبات الموسمية</li>
+                            <li><i class="fas fa-bullseye clickable-icon"></i> استهداف دقيق للجمهور المهتم بالتغذية الصحية</li>
+                            <li><i class="fas fa-images clickable-icon"></i> استخدام صور وفيديوهات جذابة</li>
+                            <li><i class="fas fa-clock clickable-icon"></i> عروض حصرية محدودة الوقت</li>
+                        </ul>
+                    </div>
+                    
+                    <div id="recommendations" style="display: none; margin-top: 15px; padding: 15px; background-color: var(--light-green); border-radius: 5px;">
+                        <h4 style="color: var(--primary-color); margin-top: 0;"><i class="fas fa-clipboard-list clickable-icon"></i> توصيات مستقبلية:</h4>
+                        <ul>
+                            <li><i class="fas fa-calendar-alt clickable-icon"></i> زيادة التركيز على الحملات الموسمية</li>
+                            <li><i class="fas fa-envelope clickable-icon"></i> تحسين استهداف حملات البريد الإلكتروني</li>
+                            <li><i class="fas fa-comments clickable-icon"></i> إضافة المزيد من المحتوى التفاعلي</li>
+                            <li><i class="fas fa-video clickable-icon"></i> اختبار إعلانات الفيديو القصيرة</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="slide-description">
+                    <i class="fas fa-info-circle clickable-icon"></i>
+                    <p>الحملات المرتبطة بمناسبات محددة مثل رمضان والسنة الجديدة حققت أعلى معدلات تحويل، مما يؤكد أهمية التوقيت والموضوعية في الحملات التسويقية.</p>
+                </div>
+            </div>
+            
+            <!-- الشريحة 7: الخلاصة والتوصيات -->
+            <div class="slide" id="slide7">
+                <h1 class="slide-title"><i class="fas fa-clipboard-check clickable-icon"></i> الخلاصة والتوصيات</h1>
+                <div class="slide-content">
+                    <div style="width: 100%;">
+                        <div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;">
+                            <div style="flex: 1; min-width: 250px; background-color: var(--light-green); padding: 20px; border-radius: 8px; box-shadow: 0 3px 10px rgba(0,0,0,0.1);">
+                                <h3 style="color: var(--primary-color); text-align: center;"><i class="fas fa-trophy clickable-icon"></i> أبرز النتائج</h3>
+                                <ul>
+                                    <li>نمو المبيعات بنسبة <span class="highlight">22%</span> خلال 3 أشهر</li>
+                                    <li>وسائل التواصل أفضل قناة تسويقية</li>
+                                    <li>الحملات الموسمية الأكثر نجاحًا</li>
+                                </ul>
+                            </div>
+                            
+                            <div style="flex: 1; min-width: 250px; background-color: #f1f8e9; padding: 20px; border-radius: 8px; box-shadow: 0 3px 10px rgba(0,0,0,0.1);">
+                                <h3 style="color: var(--primary-color); text-align: center;"><i class="fas fa-exclamation-triangle clickable-icon"></i> التحديات</h3>
+                                <ul>
+                                    <li>انخفاض أداء حملات البريد الإلكتروني</li>
+                                    <li>ارتفاع تكلفة النقر في محركات البحث</li>
+                                    <li>تفاوت أداء الحملات العامة</li>
+                                </ul>
+                            </div>
+                            
+                            <div style="flex: 1; min-width: 250px; background-color: #c8e6c9; padding: 20px; border-radius: 8px; box-shadow: 0 3px 10px rgba(0,0,0,0.1);">
+                                <h3 style="color: var(--primary-color); text-align: center;"><i class="fas fa-road clickable-icon"></i> الخطوات القادمة</h3>
+                                <ul>
+                                    <li>تركيز أكبر على الحملات الموسمية</li>
+                                    <li>إعادة هيكلة حملات البريد الإلكتروني</li>
+                                    <li>زيادة ميزانية وسائل التواصل بنسبة 20%</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="nutrition-fact" style="margin-top: 30px; text-align: center;">
+                            <i class="fas fa-chart-line clickable-icon"></i>
+                            <p>التوقع: تحقيق نمو في المبيعات بنسبة <span class="highlight">30%</span> خلال الربع القادم عند تطبيق التوصيات</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="slide-description">
+                    <i class="fas fa-info-circle clickable-icon"></i>
+                    <p>بناءً على التحليل الشامل، نوصي بالتركيز على الحملات الموسمية وتحسين أداء قنوات البريد الإلكتروني، مع تخصيص ميزانية أكبر لوسائل التواصل الاجتماعي التي أثبتت فعاليتها.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>© 2023 التغذية الذكية - جميع الحقوق محفوظة</p>
+            <p>عرض تقديمي تفاعلي - إعداد فريق التسويق الرقمي</p>
+            <div class="social-icons">
+                <a href="#"><i class="fab fa-facebook clickable-icon"></i></a>
+                <a href="#"><i class="fab fa-twitter clickable-icon"></i></a>
+                <a href="#"><i class="fab fa-instagram clickable-icon"></i></a>
+                <a href="#"><i class="fab fa-linkedin clickable-icon"></i></a>
+                <a href="#"><i class="fab fa-youtube clickable-icon"></i></a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // تاريخ اليوم
+        const today = new Date();
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('current-date').textContent = today.toLocaleDateString('ar-AR', options);
+        
+        // الرسومات البيانية
+        function initCharts() {
+            // رسم بياني للنقرات والمبيعات
+            const clicksSalesCtx = document.getElementById('clicksSalesChart').getContext('2d');
+            new Chart(clicksSalesCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['يناير', 'فبراير', 'مارس'],
+                    datasets: [
+                        {
+                            label: 'النقرات',
+                            data: [9010, 14120, 22190],
+                            backgroundColor: '#81c784',
+                            borderColor: '#2e7d32',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'المبيعات',
+                            data: [328, 496, 626],
+                            backgroundColor: '#ff8f00',
+                            borderColor: '#e65100',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'النقرات مقابل المبيعات خلال الأشهر الثلاثة',
+                            font: {
+                                size: 16
+                            }
+                        },
+                        legend: {
+                            position: 'top',
+                            rtl: true
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+            
+            // رسم بياني لأداء القنوات
+            const channelsCtx = document.getElementById('channelsChart').getContext('2d');
+            new Chart(channelsCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['وسائل التواصل', 'البريد الإلكتروني', 'محركات البحث'],
+                    datasets: [{
+                        data: [4.1, 2.8, 2.5],
+                        backgroundColor: [
+                            '#2e7d32',
+                            '#81c784',
+                            '#c8e6c9'
+                        ],
+                        borderColor: [
+                            '#1b5e20',
+                            '#4c8c4a',
+                            '#a5d6a7'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'معدل التحويل حسب القناة (%)',
+                            font: {
+                                size: 16
+                            }
+                        },
+                        legend: {
+                            position: 'right',
+                            rtl: true
+                        }
+                    }
+                }
+            });
+            
+            // رسم بياني لأفضل الحملات
+            const campaignsCtx = document.getElementById('campaignsChart').getContext('2d');
+            new Chart(campaignsCtx, {
+                type: 'radar',
+                data: {
+                    labels: ['التغذية في رمضان', 'عروض السنة', 'البروتين النباتي', 'اليوم العالمي', 'مكملات الطاقة'],
+                    datasets: [{
+                        label: 'معدل التحويل %',
+                        data: [5.7, 4.9, 4.5, 4.2, 4.1],
+                        backgroundColor: 'rgba(46, 125, 50, 0.2)',
+                        borderColor: '#2e7d32',
+                        pointBackgroundColor: '#2e7d32',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: '#2e7d32'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'أداء أفضل الحملات (معدل التحويل)',
+                            font: {
+                                size: 16
+                            }
+                        }
+                    },
+                    scales: {
+                        r: {
+                            angleLines: {
+                                display: true
+                            },
+                            suggestedMin: 0,
+                            suggestedMax: 6
+                        }
+                    }
+                }
+            });
+        }
+        
+        function showElement(elementId) {
+            // Hide all interactive elements first
+            document.querySelectorAll('[id^="success-factors"], [id^="recommendations"]').forEach(el => {
+                el.style.display = 'none';
+            });
+            
+            // Show the selected element
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            
+            // Scroll to the element
+            element.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+        
+        function showAnalysis() {
+            Swal.fire({
+                title: 'تحليل أداء القنوات',
+                html: `
+                    <div style="text-align: right;">
+                        <p><b>وسائل التواصل الاجتماعي</b> حققت أعلى معدل تحويل (4.1%) بسبب:</p>
+                        <ul>
+                            <li>استهداف دقيق للجمهور المهتم بالتغذية الصحية</li>
+                            <li>تصميم إعلانات جذابة بصور وفيديوهات احترافية</li>
+                            <li>تفاعل كبير من المتابعين مع المحتوى</li>
+                        </ul>
+                        <p><b>البريد الإلكتروني</b> يحتاج إلى تحسين في:</p>
+                        <ul>
+                            <li>توقيت إرسال الرسائل</li>
+                            <li>تصميم أكثر جاذبية</li>
+                            <li>تقسيم القوائم البريدية</li>
+                        </ul>
+                    </div>
+                `,
+                icon: 'info',
+                confirmButtonText: 'حسناً',
+                confirmButtonColor: '#2e7d32'
+            });
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            initCharts();
+            
+            // إضافة تأثير النقر على جميع الأيقونات
+            document.querySelectorAll('.clickable-icon').forEach(icon => {
+                icon.addEventListener('click', function() {
+                    this.style.color = '#2e7d32';
+                    setTimeout(() => {
+                        this.style.color = '';
+                    }, 300);
+                });
+            });
+            
+            // Load SweetAlert for beautiful alerts
+            const script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/sweetalert2@11';
+            document.head.appendChild(script);
+        });
+    </script>
+    
+    <!-- Load Tajawal font for better Arabic support -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+</body>
+</html>
+
